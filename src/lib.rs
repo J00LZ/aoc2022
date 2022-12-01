@@ -76,6 +76,34 @@ macro_rules! days {
             ]
         });
 
+        #[cfg(test)]
+        mod tests {
+            use std::fs::read_to_string;
+
+            use super::*;
+
+            $(
+                paste! {
+                    #[test]
+                    fn [<day $n _part1>]() {
+                        assert_eq!(
+                            [<DAY $n>].part1(),
+                            read_to_string(&format!("./output/day{:02}-p1.txt", $n)).unwrap()
+                        );
+                    }
+
+                    #[test]
+                    fn [<day $n _part2>]() {
+                        assert_eq!(
+                            [<DAY $n>].part2(),
+                            read_to_string(&format!("./output/day{:02}-p2.txt", $n)).unwrap()
+                        );
+                    }
+                }
+
+            ),+
+        }
+
     };
 }
 
