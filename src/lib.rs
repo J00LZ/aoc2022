@@ -3,7 +3,7 @@ use once_cell::sync::Lazy;
 use paste::paste;
 
 macro_rules! days {
-    ($($n:expr),+) => {
+    ($($n:expr),+ $(,)?) => {
         $(
             paste! {
                 pub mod [<day $n>];
@@ -25,7 +25,7 @@ macro_rules! days {
                                         .unwrap()
                                         .file_name()
                                         .to_string_lossy()
-                                        .starts_with("[<day $n>]")
+                                        .starts_with(&format!("day{:02}", $n))
                                 })
                                 .flatten()
                                 .collect::<Vec<_>>();
@@ -37,7 +37,7 @@ macro_rules! days {
                                         .unwrap()
                                         .file_name()
                                         .to_string_lossy()
-                                        .starts_with(&format!("[<day $n>]-p{}", part))
+                                        .starts_with(&format!("day{:02}-p{}", $n, part))
                                 })
                                 .flatten()
                                 .collect::<Vec<_>>();
@@ -46,7 +46,9 @@ macro_rules! days {
 
                         #[test]
                         fn test_part1() {
+                            println!("Testing part 1");
                             for (i, o) in get_files(1) {
+                                println!("Testing {}", i.file_name().to_string_lossy());
                                 let input = std::fs::read_to_string(i.path()).unwrap();
                                 let output = std::fs::read_to_string(o.path()).unwrap();
                                 let day = [<day $n>]::[<Day $n>]::new(input);
@@ -68,11 +70,11 @@ macro_rules! days {
         )+
         pub static DAYS: Lazy<Vec<&dyn Day>> = Lazy::new(|| {
             vec![
-                paste! {
-                    $(
+                $(
+                    paste! {
                         &*[<DAY $n>] as &dyn Day
-                    ),+
-                }
+                    }
+                ),+
             ]
         });
 
@@ -101,13 +103,13 @@ macro_rules! days {
                     }
                 }
 
-            ),+
+            )+
         }
 
     };
 }
 
-days!(01);
+days!(01, 02);
 
 pub trait Day: Send + Sync {
     fn new(input: String) -> Self
