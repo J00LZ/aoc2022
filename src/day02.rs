@@ -36,9 +36,9 @@ impl RPS {
 
     fn round_thing(&self, r: RoundResult) -> Self {
         match r {
-            RoundResult::Lose => self.lose(),
             RoundResult::Win => self.win(),
             RoundResult::Draw => *self,
+            RoundResult::Lose => self.lose(),
         }
     }
 
@@ -106,7 +106,6 @@ impl Day for Day02 {
             .map(|l| {
                 let v = l
                     .split_ascii_whitespace()
-                    .filter(|s| !s.is_empty())
                     .map(|s| s.parse().unwrap())
                     .collect::<Vec<_>>();
                 (v[0], v[1])
@@ -118,7 +117,8 @@ impl Day for Day02 {
     fn part1(&self) -> String {
         self.games
             .iter()
-            .map(|g| RPS::game_result(*g))
+            .copied()
+            .map(RPS::game_result)
             .sum::<i64>()
             .to_string()
     }
