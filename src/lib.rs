@@ -109,7 +109,7 @@ macro_rules! days {
     };
 }
 
-days!(01, 02, 03, 04);
+days!(01, 02, 03, 04, 05);
 
 pub trait Day: Send + Sync {
     fn new(input: String) -> Self
