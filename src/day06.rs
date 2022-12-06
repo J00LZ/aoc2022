@@ -17,10 +17,7 @@ impl Day for Day06 {
     }
 
     fn part1(&self) -> String {
-        let mut w = self.chars.clone();
-        let mut v = self.chars.clone();
-        w.append(&mut v);
-        for (i, w) in w.windows(4).enumerate() {
+        for (i, w) in self.chars.windows(4).enumerate() {
             if w.iter().unique().count() == 4 {
                 return (i + 4).to_string();
             }
@@ -29,10 +26,7 @@ impl Day for Day06 {
     }
 
     fn part2(&self) -> String {
-        let mut w = self.chars.clone();
-        let mut v = self.chars.clone();
-        w.append(&mut v);
-        for (i, w) in w.windows(14).enumerate() {
+        for (i, w) in self.chars.windows(14).enumerate() {
             if w.iter().unique().count() == 14 {
                 return (i + 14).to_string();
             }
