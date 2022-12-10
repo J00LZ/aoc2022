@@ -19,9 +19,17 @@ impl Day for Day08 {
     where
         Self: Sized,
     {
-        let get_char = |x: usize, y: usize| input.lines().nth(y).unwrap().chars().nth(x).unwrap();
-        let ys = input.lines().filter(|x| !x.is_empty()).count();
-        let xs = input.lines().next().unwrap().len();
+        let mut grid = Vec::new();
+        for l in input.lines() {
+            let mut line = Vec::new();
+            for c in l.chars() {
+                line.push(c);
+            }
+            grid.push(line);
+        }
+        let get_char = |x: usize, y: usize| grid[y][x];
+        let ys = grid.len();
+        let xs = grid[0].len();
         let mut grid = vec![vec![(HashSet::new(), 0); xs]; ys];
         for (y, line) in grid.iter_mut().enumerate().take(ys) {
             for (x, (map, score)) in line.iter_mut().enumerate().take(xs) {

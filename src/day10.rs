@@ -31,10 +31,10 @@ impl<F: FnMut(usize, i64)> Cpu<F> {
 
     fn run(&mut self) {
         while self.pc < self.code.len() {
-            (self.tick_fn)(self.total_tick, self.x);
             let ins = self.code[self.pc];
             self.tick += 1;
             self.total_tick += 1;
+            (self.tick_fn)(self.total_tick, self.x);
             if self.tick >= ins.tick_count() {
                 match ins {
                     Insruction::Nop => (),
@@ -94,7 +94,6 @@ impl Day for Day10 {
     fn part1(&self) -> String {
         let mut counter = 0;
         let mut z = Cpu::new(self.instructions.clone(), |total_tick, x| {
-            let total_tick = total_tick + 1;
             if total_tick >= 20 && (total_tick - 20) % 40 == 0 {
                 counter += total_tick as i64 * x;
             }
@@ -106,8 +105,9 @@ impl Day for Day10 {
     fn part2(&self) -> String {
         let mut screen = vec![vec!['.'; 40]; 6];
         let mut z = Cpu::new(self.instructions.clone(), |total_tick, x| {
-            let x_pos = total_tick % 40;
-            let y_pos = total_tick / 40;
+            let screen_pos = total_tick - 1;
+            let x_pos = screen_pos % 40;
+            let y_pos = screen_pos / 40;
             if (x - 1..=x + 1).contains(&(x_pos as i64)) {
                 screen[y_pos][x_pos] = '#';
             }
