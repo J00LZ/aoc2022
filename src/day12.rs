@@ -1,7 +1,6 @@
 use std::ops::{Deref, DerefMut};
 
 use itertools::Itertools;
-use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 
 use crate::Day;
 
@@ -23,7 +22,7 @@ impl Matrix {
         Self { matrix, rows, cols }
     }
 
-    fn neighbours(&self, pos: &(usize, usize)) -> Vec<(usize, usize)> {
+    fn neighbours_but_reversed(&self, pos: &(usize, usize)) -> Vec<(usize, usize)> {
         let (x, y) = *pos;
         let mut neighbours = Vec::new();
         if x > 0 {
@@ -41,7 +40,7 @@ impl Matrix {
         neighbours
             .into_iter()
             .filter(|(x_test, y_test)| {
-                (self.matrix[*y_test][*x_test] as i32) <= (self.matrix[y][x] as i32 + 1)
+                (self.matrix[*y_test][*x_test] as i32) >= (self.matrix[y][x] as i32 - 1)
             })
             .collect_vec()
     }
@@ -95,15 +94,15 @@ impl Day for Day12 {
 
     fn part1(&self) -> String {
         let r = pathfinding::directed::dijkstra::dijkstra(
-            &self.start_pos,
+            &self.end_pos,
             |p| {
                 self.matrix
-                    .neighbours(p)
+                    .neighbours_but_reversed(p)
                     .into_iter()
                     .map(|p| (p, 1))
                     .collect_vec()
             },
-            |&p| p == self.end_pos,
+            |&p| p == self.start_pos,
         );
         r.unwrap().1.to_string()
     }
@@ -118,26 +117,19 @@ impl Day for Day12 {
             }
         }
 
-        let z = start_positions
-            .par_iter()
-            .flat_map(|p| {
-                pathfinding::directed::dijkstra::dijkstra(
-                    p,
-                    |p| {
-                        self.matrix
-                            .neighbours(p)
-                            .into_iter()
-                            .map(|p| (p, 1))
-                            .collect_vec()
-                    },
-                    |&p| p == self.end_pos,
-                )
-                .map(|r| r.1)
-            })
-            .min()
-            .unwrap()
-            .to_string();
-
-        z
+        pathfinding::directed::dijkstra::dijkstra(
+            &self.end_pos,
+            |p| {
+                self.matrix
+                    .neighbours_but_reversed(p)
+                    .into_iter()
+                    .map(|p| (p, 1))
+                    .collect_vec()
+            },
+            |p| start_positions.contains(p),
+        )
+        .unwrap()
+        .1
+        .to_string()
     }
 }
