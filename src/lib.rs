@@ -2,6 +2,8 @@
 use once_cell::sync::Lazy;
 use paste::paste;
 
+mod parser;
+
 macro_rules! days {
     ($($n:expr),+ $(,)?) => {
         $(
@@ -109,7 +111,7 @@ macro_rules! days {
     };
 }
 
-days!(01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12);
+days!(01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13);
 
 pub trait Day: Send + Sync {
     fn new(input: String) -> Self
